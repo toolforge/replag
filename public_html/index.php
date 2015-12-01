@@ -50,6 +50,7 @@ th {font-weight:bold;border-bottom:1px solid #333;}
 .headerSortUp {background-image:url("data:image/gif;base64,R0lGODlhBwAEAIABACMtMP///yH5BAEKAAEALAAAAAAHAAQAAAIIhA+BGWoNWSgAOw==");}
 .headerSortDown {background-image:url("data:image/gif;base64,R0lGODlhBwAEAIABACMtMP///yH5BAEKAAEALAAAAAAHAAQAAAIHjGEJq8sOCwA7");}
 footer {margin-top:2em;padding-top:1em;border-top:1px solid #333;text-align:right;}
+#powered-by {float:left;}
 </style>
 </head>
 <body>
@@ -163,6 +164,9 @@ foreach ( $wikis as $wiki => $shard ) {
 </table>
 </section>
 <footer>
+<div id="powered-by">
+<a href="/"><img src="https://tools-static.wmflabs.org/static/logos/powered-by-tool-labs.png" alt="Powered by Wikimedia Tool Labs"></a>
+</div>
 <a id="source" href="?source">view source</a>
 </footer>
 <script src="https://tools-static.wmflabs.org/static/jquery/2.1.0/jquery.min.js"></script>
