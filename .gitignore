@@ -1,7 +1,10 @@
 /.bash_history
+/.gitconfig
+/.kube/
 /.viminfo
 /access.log
 /error.log
 /replica.my.cnf
+/service.log
 /service.manifest
 /www/static/replag.git
