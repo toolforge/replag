@@ -81,7 +81,11 @@ function connect( $db, $host ) {
 	return new PDO(
 		"mysql:dbname={$db};host={$host}",
 		$cnf['user'],
-		$cnf['password']
+		$cnf['password'],
+		array(
+			PDO::ATTR_TIMEOUT => 5,
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+		)
 	);
 }
 
