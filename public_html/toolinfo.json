@@ -1,9 +1,0 @@
-{
-  "name": "replag",
-  "title": "Replag reported by heartbeat_p",
-  "description": "Wikimedia Labs replica database lag as reported by the heartbeat_p database.",
-  "url": "https://tools.wmflabs.org/replag/",
-  "keywords": "replag, db, lag",
-  "author": "Bryan Davis",
-  "repository": "https://tools.wmflabs.org/replag/?source"
-}
