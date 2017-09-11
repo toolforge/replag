@@ -1,6 +1,9 @@
 /.bash_history
+/.bashrc
 /.gitconfig
 /.kube/
+/.lesshst
+/.mysql_history
 /.viminfo
 /access.log
 /error.log
