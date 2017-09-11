@@ -56,7 +56,7 @@ footer {margin-top:2em;padding-top:1em;border-top:1px solid #333;text-align:righ
 <body>
 <header>
 <h1>Replag reported by heartbeat_p</h1>
-<p>Wikimedia Labs replica database lag as reported by the <a href="https://lists.wikimedia.org/pipermail/labs-l/2015-November/004143.html">heartbeat_p database</a>.</p>
+<p>Wikimedia Cloud Services <a href="https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database">Wiki Replicas</a> lag as reported by the <a href="https://lists.wikimedia.org/pipermail/labs-l/2015-November/004143.html">heartbeat_p database</a>.</p>
 </header>
 <section>
 <?php
@@ -169,7 +169,7 @@ foreach ( $wikis as $wiki => $shard ) {
 </section>
 <footer>
 <div id="powered-by">
-<a href="/"><img src="https://tools-static.wmflabs.org/static/logos/powered-by-tool-labs.png" alt="Powered by Wikimedia Tool Labs"></a>
+<a href="/"><img src="https://tools-static.wmflabs.org/toolforge/banners/Powered-by-Toolforge.png" alt="Powered by Wikimedia Toolforge"></a>
 </div>
 <a id="source" href="?source">view source</a>
 </footer>
