@@ -84,8 +84,6 @@ $replag = array();
 
 /** @var array $wikis dbname => slice */
 $wikis = array();
-/** @var array $slices slice => hostname */
-$slices = array();
 
 // Read database credentials from replica.my.cnf
 $cnf = parse_ini_file(
@@ -162,8 +160,9 @@ foreach ( $replag as $host => $shards ) {
 <?php
 } //end foreach ( $replag )
 
-// Reset replag accumulator for per-wiki stats
+// Reset accumulators for per-wiki stats
 $replag = array();
+$slices = array();
 
 // Get list of all databases and the slices they live on from meta_p.wiki
 $dbh = connect( 'meta_p', 's7.labsdb' );
