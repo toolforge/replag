@@ -162,7 +162,10 @@ foreach ( $replag as $host => $shards ) {
 </table>
 <?php
 } //end foreach ( $replag )
-
+?>
+</section>
+<section>
+<?php
 // Reset accumulators for per-wiki stats
 $replag = array();
 $slices = array();
