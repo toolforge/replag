@@ -46,6 +46,9 @@ th.host {border:none;text-align:left;}
 .shard {text-align:center;}
 .lag, .time {text-align:right;}
 .lagged {background-color:#fee;}
+.header {padding-right:10px;background-position:right center;background-repeat:no-repeat;background-image:url("data:image/gif;base64,R0lGODlhBwAJAIABACMtMP///yH5BAEKAAEALAAAAAAHAAkAAAINjGEJq8sOk4Qu0IZmKgA7");}
+.headerSortUp {background-image:url("data:image/gif;base64,R0lGODlhBwAEAIABACMtMP///yH5BAEKAAEALAAAAAAHAAQAAAIIhA+BGWoNWSgAOw==");}
+.headerSortDown {background-image:url("data:image/gif;base64,R0lGODlhBwAEAIABACMtMP///yH5BAEKAAEALAAAAAAHAAQAAAIHjGEJq8sOCwA7");}
 footer {margin-top:2em;padding-top:1em;border-top:1px solid #333;text-align:right;}
 #powered-by {float:left;}
 @media only screen and (min-width: 768px) {
@@ -214,5 +217,12 @@ foreach ( $wikis as $wiki => $shard ) {
 </div>
 <a id="source" href="https://phabricator.wikimedia.org/source/tool-replag/">view source</a>
 </footer>
+<script src="https://tools-static.wmflabs.org/static/jquery/2.1.0/jquery.min.js"></script>
+<script src="https://tools-static.wmflabs.org/static/jquery-tablesorter/2.0.5/jquery.tablesorter.min.js"></script>
+<script lang="javascript">
+$( document ).ready( function(){
+	$( '#by-wiki' ).tablesorter( { sortList:[[2,1]] } );
+});
+</script>
 </body>
 </html>
