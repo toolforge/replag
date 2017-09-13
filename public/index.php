@@ -194,7 +194,7 @@ foreach ( $slices as $slice => $host ) {
 ?>
 <table id="by-wiki">
 <thead><tr>
-<th class="wiki">Wiki</th>
+<th class="wiki">Database</th>
 <th class="shard">Shard</th>
 <th class="lag">Lag (seconds)</th>
 <th class=time">Lag (time)</th>
@@ -205,7 +205,7 @@ foreach ( $slices as $slice => $host ) {
 foreach ( $wikis as $wiki => $shard ) {
 	$lag = $replag[$shard];
 	echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
-	echo '<td class="wiki">', htmlspecialchars( $wiki ), '</td>';
+	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.labsdb</td>';
 	echo '<td class="shard">', htmlspecialchars( $shard ), '</td>';
 	echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
 	echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
