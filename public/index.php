@@ -88,7 +88,8 @@ $wikis = array();
 $slices = array();
 
 // Read database credentials from replica.my.cnf
-$cnf = parse_ini_file( '../replica.my.cnf' );
+$cnf = parse_ini_file(
+	posix_getpwuid( posix_getuid() )['dir'] . '/replica.my.cnf' );
 
 /**
  * Connect to a MySQL database.
