@@ -1,7 +1,6 @@
-<?php if ( isset( $_GET['source'] ) ) { show_source(__FILE__); exit(); } ?>
 <!DOCTYPE html>
 <!--
-Copyright (c) 2015-2017 Bryan Davis <bd808@wikimedia.org>
+Copyright (c) 2015-2017 Wikimedia Foundation and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -162,7 +161,7 @@ foreach ( $replag as $host => $shards ) {
 <div id="powered-by">
 <a href="/"><img src="https://tools-static.wmflabs.org/toolforge/banners/Powered-by-Toolforge.png" alt="Powered by Wikimedia Toolforge"></a>
 </div>
-<a id="source" href="?source">view source</a>
+<a id="source" href="https://phabricator.wikimedia.org/source/tool-replag/">view source</a>
 </footer>
 </body>
 </html>
