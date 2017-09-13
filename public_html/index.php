@@ -82,6 +82,11 @@ $slices = array(
 /** @var array $replag host => slice => lag */
 $replag = array();
 
+/** @var array $wikis dbname => slice */
+$wikis = array();
+/** @var array $slices slice => hostname */
+$slices = array();
+
 // Read database credentials from replica.my.cnf
 $cnf = parse_ini_file( '../replica.my.cnf' );
 
@@ -155,7 +160,53 @@ foreach ( $replag as $host => $shards ) {
 </table>
 <?php
 } //end foreach ( $replag )
+
+// Reset replag accumulator for per-wiki stats
+$replag = array();
+
+// Get list of all databases and the slices they live on from meta_p.wiki
+$dbh = connect( 'meta_p', 's7.labsdb' );
+$stmt = $dbh->query( 'SELECT dbname, slice FROM wiki ORDER BY dbname' );
+$res = $stmt->fetchAll( PDO::FETCH_ASSOC );
+$stmt->closeCursor();
+
+// Populate $wikis and $slices from meta_p.wiki results
+foreach ( $res as $row ) {
+	list( $slice, $domain ) = explode( '.', $row['slice'] );
+	$wikis[$row['dbname']] = $slice;
+	$slices[$slice] = $row['slice'];
+}
+
+// Get lag data for each slice from the heartbeat_p db on the matching host
+foreach ( $slices as $slice => $host ) {
+	$dbh = connect( 'heartbeat_p', $host );
+	$stmt = $dbh->prepare( 'SELECT lag FROM heartbeat WHERE shard = ?' );
+	$stmt->execute( array( $slice ) );
+	$replag[$slice] = $stmt->fetchColumn();
+	$stmt->closeCursor();
+}
 ?>
+<table id="by-wiki">
+<thead><tr>
+<th class="wiki">Wiki</th>
+<th class="shard">Shard</th>
+<th class="lag">Lag (seconds)</th>
+<th class=time">Lag (time)</th>
+</tr></thead>
+<tbody>
+<?php
+// Print shard replag data for each database
+foreach ( $wikis as $wiki => $shard ) {
+	$lag = $replag[$shard];
+	echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
+	echo '<td class="wiki">', htmlspecialchars( $wiki ), '</td>';
+	echo '<td class="shard">', htmlspecialchars( $shard ), '</td>';
+	echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
+	echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
+}
+?>
+</tbody>
+</table>
 </section>
 <footer>
 <div id="powered-by">
