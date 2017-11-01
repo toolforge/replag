@@ -117,6 +117,9 @@ function connect( $db, $host ) {
  * @return string Time interval in <hours>:<minutes>:<seconds> format
  */
 function secondsAsTime( $seconds ) {
+	if ( $seconds === PHP_INT_MAX ) {
+		return 'N/A';
+	}
 	return sprintf(
 		'%02d:%02d:%02d',
 		floor( $seconds / 3600 ),
@@ -129,12 +132,16 @@ function secondsAsTime( $seconds ) {
 foreach ( $cluster as $host) {
 	$replag[$host] = array();
 	foreach ( $slices as $slice ) {
-		$dbh = connect( 'heartbeat_p', $host );
-		$stmt = $dbh->prepare(
-			'SELECT lag FROM heartbeat WHERE shard = ?' );
-		$stmt->execute( array( $slice ) );
-		$replag[$host][$slice] = $stmt->fetchColumn();
-		$stmt->closeCursor();
+		try {
+			$dbh = connect( 'heartbeat_p', $host );
+			$stmt = $dbh->prepare(
+				'SELECT lag FROM heartbeat WHERE shard = ?' );
+			$stmt->execute( array( $slice ) );
+			$replag[$host][$slice] = $stmt->fetchColumn();
+			$stmt->closeCursor();
+		} catch ( PDOException $e ) {
+			$replag[$host][$slice] = PHP_INT_MAX;
+		}
 	}
 }
 
@@ -170,26 +177,35 @@ foreach ( $replag as $host => $shards ) {
 $replag = array();
 $slices = array();
 
-// Get list of all databases and the slices they live on from meta_p.wiki
-$dbh = connect( 'meta_p', 's7.labsdb' );
-$stmt = $dbh->query( 'SELECT dbname, slice FROM wiki ORDER BY dbname' );
-$res = $stmt->fetchAll( PDO::FETCH_ASSOC );
-$stmt->closeCursor();
+try {
+	// Get list of all databases and the slices they live on from meta_p.wiki
+	$dbh = connect( 'meta_p', 's7.web.db.svc.eqiad.wmflabs' );
+	$stmt = $dbh->query( 'SELECT dbname, slice FROM wiki ORDER BY dbname' );
+	$res = $stmt->fetchAll( PDO::FETCH_ASSOC );
+	$stmt->closeCursor();
 
-// Populate $wikis and $slices from meta_p.wiki results
-foreach ( $res as $row ) {
-	list( $slice, $domain ) = explode( '.', $row['slice'] );
-	$wikis[$row['dbname']] = $slice;
-	$slices[$slice] = $row['slice'];
+	// Populate $wikis and $slices from meta_p.wiki results
+	foreach ( $res as $row ) {
+		list( $slice, $domain ) = explode( '.', $row['slice'] );
+		$wikis[$row['dbname']] = $slice;
+		$slices[$slice] = $row['slice'];
+	}
+} catch ( PDOException $e ) {
+	// TODO: better error reporting
 }
+
 
 // Get lag data for each slice from the heartbeat_p db on the matching host
 foreach ( $slices as $slice => $host ) {
-	$dbh = connect( 'heartbeat_p', $host );
-	$stmt = $dbh->prepare( 'SELECT lag FROM heartbeat WHERE shard = ?' );
-	$stmt->execute( array( $slice ) );
-	$replag[$slice] = $stmt->fetchColumn();
-	$stmt->closeCursor();
+	try {
+		$dbh = connect( 'heartbeat_p', $host );
+		$stmt = $dbh->prepare( 'SELECT lag FROM heartbeat WHERE shard = ?' );
+		$stmt->execute( array( $slice ) );
+		$replag[$slice] = $stmt->fetchColumn();
+		$stmt->closeCursor();
+	} catch ( PDOException $e ) {
+		$replag[$slice] = PHP_INT_MAX;
+	}
 }
 ?>
 <table id="by-wiki">
