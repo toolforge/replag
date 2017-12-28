@@ -63,12 +63,10 @@ footer {margin-top:2em;padding-top:1em;border-top:1px solid #333;text-align:righ
 </header>
 <section id="by-host">
 <?php
-/** @var array $cluster hostnames */
-$cluster = array(
-	'wikireplica-analytics.eqiad.wmnet',
-	'wikireplica-web.eqiad.wmnet',
-	'c1.labsdb',
-	'c3.labsdb',
+/** @var array $clusters hostnames */
+$clusters = array(
+	'analytics.db.svc.eqiad.wmflabs',
+	'web.db.svc.eqiad.wmflabs',
 );
 
 /** @var array $slices slice names */
@@ -129,18 +127,19 @@ function secondsAsTime( $seconds ) {
 }
 
 // Get lag data for each slice from the heartbeat_p db on each host
-foreach ( $cluster as $host) {
-	$replag[$host] = array();
+foreach ( $clusters as $cluster) {
+	$replag[$cluster] = array();
 	foreach ( $slices as $slice ) {
+		$host = "{$slice}.{$cluster}";
 		try {
 			$dbh = connect( 'heartbeat_p', $host );
 			$stmt = $dbh->prepare(
 				'SELECT lag FROM heartbeat WHERE shard = ?' );
 			$stmt->execute( array( $slice ) );
-			$replag[$host][$slice] = $stmt->fetchColumn();
+			$replag[$cluster][$slice] = $stmt->fetchColumn();
 			$stmt->closeCursor();
 		} catch ( PDOException $e ) {
-			$replag[$host][$slice] = PHP_INT_MAX;
+			$replag[$cluster][$slice] = PHP_INT_MAX;
 		}
 	}
 }
