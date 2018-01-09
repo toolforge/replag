@@ -78,6 +78,7 @@ $slices = array(
 	's5',
 	's6',
 	's7',
+	's8',
 );
 
 /** @var array $replag host => slice => lag */
