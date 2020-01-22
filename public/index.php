@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Copyright (c) 2015-2017 Wikimedia Foundation and contributors
+Copyright (c) 2015-2020 Wikimedia Foundation and contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ table {border-spacing:1em 0;margin-bottom:1em;}
 th, td {padding:.2em;margin:.2em;}
 th {font-weight:bold;border-bottom:1px solid #333;}
 th.host {border:none;text-align:left;}
-.shard {text-align:center;}
+.slice {text-align:center;}
 .lag, .time {text-align:right;}
 .lagged {background-color:#fee;}
 .header {padding-right:10px;background-position:right center;background-repeat:no-repeat;background-image:url("data:image/gif;base64,R0lGODlhBwAJAIABACMtMP///yH5BAEKAAEALAAAAAAHAAkAAAINjGEJq8sOk4Qu0IZmKgA7");}
@@ -59,7 +59,7 @@ footer {margin-top:2em;padding-top:1em;border-top:1px solid #333;text-align:righ
 <body>
 <header>
 <h1>Replag reported by heartbeat_p</h1>
-<p>Wikimedia Cloud Services <a href="https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database">Wiki Replicas</a> lag as reported by the <a href="https://lists.wikimedia.org/pipermail/labs-l/2015-November/004143.html">heartbeat_p database</a>.</p>
+<p>Wikimedia Cloud Services <a href="https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database">Wiki Replicas</a> replication lag as reported by the <a href="https://lists.wikimedia.org/pipermail/labs-l/2015-November/004143.html">heartbeat_p database</a>.</p>
 </header>
 <section id="by-host">
 <?php
@@ -145,22 +145,22 @@ foreach ( $clusters as $cluster) {
 	}
 }
 
-// Print replag data for each shard on each host
-foreach ( $replag as $host => $shards ) {
+// Print replag data for each slice on each host
+foreach ( $replag as $host => $slices ) {
 	$shost = htmlspecialchars( $host );
 ?>
 <table id="<?= $shost ?>">
 <thead>
 <tr><th class="host" colspan="3"><?= $shost ?></th></tr>
-<tr><th class="shard">Shard</th>
+<tr><th class="slice">Slice</th>
 <th class="lag">Lag (seconds)</th>
 <th class=time">Lag (time)</th>
 </tr></thead>
 <tbody>
 <?php
-	foreach ( $shards as $shard => $lag ) {
+	foreach ( $slices as $slice => $lag ) {
 		echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
-		echo '<td class="shard">', htmlspecialchars( $shard ), '</td>';
+		echo '<td class="slice">', htmlspecialchars( $slice ), '</td>';
 		echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
 		echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
 	}
@@ -211,18 +211,18 @@ foreach ( $slices as $slice => $host ) {
 <table id="by-wiki">
 <thead><tr>
 <th class="wiki">Database</th>
-<th class="shard">Shard</th>
+<th class="slice">Slice</th>
 <th class="lag">Lag (seconds)</th>
 <th class=time">Lag (time)</th>
 </tr></thead>
 <tbody>
 <?php
-// Print shard replag data for each database
-foreach ( $wikis as $wiki => $shard ) {
-	$lag = $replag[$shard];
+// Print slice replag data for each database
+foreach ( $wikis as $wiki => $slice ) {
+	$lag = $replag[$slice];
 	echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
 	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.labsdb</td>';
-	echo '<td class="shard">', htmlspecialchars( $shard ), '</td>';
+	echo '<td class="slice">', htmlspecialchars( $slice ), '</td>';
 	echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
 	echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
 }
