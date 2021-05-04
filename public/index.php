@@ -65,8 +65,8 @@ footer {margin-top:2em;padding-top:1em;border-top:1px solid #333;text-align:righ
 <?php
 /** @var array $clusters hostnames */
 $clusters = array(
-	'analytics.db.svc.eqiad.wmflabs',
-	'web.db.svc.eqiad.wmflabs',
+	'analytics.db.svc.wikimedia.cloud',
+	'web.db.svc.wikimedia.cloud',
 );
 
 /** @var array $slices slice names */
@@ -179,7 +179,7 @@ $slices = array();
 
 try {
 	// Get list of all databases and the slices they live on from meta_p.wiki
-	$dbh = connect( 'meta_p', 's7.web.db.svc.eqiad.wmflabs' );
+	$dbh = connect( 'meta_p', 's7.web.db.svc.wikimedia.cloud' );
 	$stmt = $dbh->query( 'SELECT dbname, slice FROM wiki ORDER BY dbname' );
 	$res = $stmt->fetchAll( PDO::FETCH_ASSOC );
 	$stmt->closeCursor();
@@ -221,7 +221,7 @@ foreach ( $slices as $slice => $host ) {
 foreach ( $wikis as $wiki => $slice ) {
 	$lag = $replag[$slice];
 	echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
-	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.{analytics,web}.db.svc.eqiad.wmflabs</td>';
+	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.{analytics,web}.db.svc.wikimedia.cloud</td>';
 	echo '<td class="slice">', htmlspecialchars( $slice ), '</td>';
 	echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
 	echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
