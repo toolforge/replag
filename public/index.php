@@ -176,6 +176,9 @@ foreach ( $replag as $host => $slices ) {
 </table>
 <?php
 } //end foreach ( $replag )
+?>
+</section>
+<?php
 if ( $lagged ) {
 ?>
 <aside>
@@ -184,7 +187,6 @@ if ( $lagged ) {
 <?php
 } //end if ( $lagged )
 ?>
-</section>
 <section>
 <?php
 // Reset accumulators for per-wiki stats
