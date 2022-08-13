@@ -46,6 +46,7 @@ th.host {border:none;text-align:left;}
 .slice {text-align:center;}
 .lag, .time {text-align:right;}
 .lagged {background-color:#fee;}
+p.lagged {padding:.5em;border:double #f33;}
 .header {padding-right:10px;background-position:right center;background-repeat:no-repeat;background-image:url("data:image/gif;base64,R0lGODlhBwAJAIABACMtMP///yH5BAEKAAEALAAAAAAHAAkAAAINjGEJq8sOk4Qu0IZmKgA7");}
 .headerSortUp {background-image:url("data:image/gif;base64,R0lGODlhBwAEAIABACMtMP///yH5BAEKAAEALAAAAAAHAAQAAAIIhA+BGWoNWSgAOw==");}
 .headerSortDown {background-image:url("data:image/gif;base64,R0lGODlhBwAEAIABACMtMP///yH5BAEKAAEALAAAAAAHAAQAAAIHjGEJq8sOCwA7");}
@@ -146,6 +147,7 @@ foreach ( $clusters as $cluster) {
 }
 
 // Print replag data for each slice on each host
+$lagged = false;
 foreach ( $replag as $host => $slices ) {
 	$shost = htmlspecialchars( $host );
 ?>
@@ -159,7 +161,12 @@ foreach ( $replag as $host => $slices ) {
 <tbody>
 <?php
 	foreach ( $slices as $slice => $lag ) {
-		echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
+		$class = '';
+		if ( $lag > 0 ) {
+			$lagged = true;
+			$class = 'lagged';
+		}
+		echo '<tr class="', $class, '">';
 		echo '<td class="slice">', htmlspecialchars( $slice ), '</td>';
 		echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
 		echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
@@ -169,6 +176,13 @@ foreach ( $replag as $host => $slices ) {
 </table>
 <?php
 } //end foreach ( $replag )
+if ( $lagged ) {
+?>
+<aside>
+<p class="lagged">Please check for <a href="https://wikitech.wikimedia.org/wiki/Map_of_database_maintenance">active database maintenance</a> before reporting replication lag issues on IRC or Phabricator.</p>
+</aside>
+<?php
+} //end if ( $lagged )
 ?>
 </section>
 <section>
