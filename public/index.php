@@ -156,7 +156,7 @@ foreach ( $replag as $host => $slices ) {
 <tr><th class="host" colspan="3"><?= $shost ?></th></tr>
 <tr><th class="slice">Slice</th>
 <th class="lag">Lag (seconds)</th>
-<th class=time">Lag (time)</th>
+<th class="time">Lag (time)</th>
 </tr></thead>
 <tbody>
 <?php
@@ -229,7 +229,7 @@ foreach ( $slices as $slice => $host ) {
 <th class="wiki">Database</th>
 <th class="slice">Slice</th>
 <th class="lag">Lag (seconds)</th>
-<th class=time">Lag (time)</th>
+<th class="time">Lag (time)</th>
 </tr></thead>
 <tbody>
 <?php
