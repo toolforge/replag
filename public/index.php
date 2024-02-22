@@ -83,10 +83,13 @@ $slices = array(
 );
 
 /** @var array $replag host => slice => lag */
-$replag = array();
+$replag = [];
+
+/** @var array $maxSectionReplag max replag in a given section */
+$maxSectionReplag = array_fill_keys( $slices, 0 );
 
 /** @var array $wikis dbname => slice */
-$wikis = array();
+$wikis = [];
 
 // Read database credentials from replica.my.cnf
 $cnf = parse_ini_file(
@@ -129,7 +132,7 @@ function secondsAsTime( $seconds ) {
 }
 
 // Get lag data for each slice from the heartbeat_p db on each host
-foreach ( $clusters as $cluster) {
+foreach ( $clusters as $cluster ) {
 	$replag[$cluster] = array();
 	foreach ( $slices as $slice ) {
 		$host = "{$slice}.{$cluster}";
@@ -139,6 +142,7 @@ foreach ( $clusters as $cluster) {
 				'SELECT lag FROM heartbeat WHERE shard = ?' );
 			$stmt->execute( array( $slice ) );
 			$replag[$cluster][$slice] = $stmt->fetchColumn();
+			$maxSectionReplag[$slice] = max( $maxSectionReplag[$slice], $replag[$cluster][$slice] );
 			$stmt->closeCursor();
 		} catch ( PDOException $e ) {
 			$replag[$cluster][$slice] = PHP_INT_MAX;
@@ -209,20 +213,6 @@ try {
 } catch ( PDOException $e ) {
 	// TODO: better error reporting
 }
-
-
-// Get lag data for each slice from the heartbeat_p db on the matching host
-foreach ( $slices as $slice => $host ) {
-	try {
-		$dbh = connect( 'heartbeat_p', $host );
-		$stmt = $dbh->prepare( 'SELECT lag FROM heartbeat WHERE shard = ?' );
-		$stmt->execute( array( $slice ) );
-		$replag[$slice] = $stmt->fetchColumn();
-		$stmt->closeCursor();
-	} catch ( PDOException $e ) {
-		$replag[$slice] = PHP_INT_MAX;
-	}
-}
 ?>
 <table id="by-wiki">
 <thead><tr>
@@ -234,11 +224,11 @@ foreach ( $slices as $slice => $host ) {
 <tbody>
 <?php
 // Print slice replag data for each database
-foreach ( $wikis as $wiki => $slice ) {
-	$lag = $replag[$slice];
+foreach ( $wikis as $wiki => $section ) {
+	$lag = $maxSectionReplag[$section];
 	echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
 	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.{analytics,web}.db.svc.wikimedia.cloud</td>';
-	echo '<td class="slice">', htmlspecialchars( $slice ), '</td>';
+	echo '<td class="slice">', htmlspecialchars( $section ), '</td>';
 	echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
 	echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
 }
