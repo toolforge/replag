@@ -250,7 +250,7 @@ foreach ( $wikis as $wiki => $slice ) {
 <div id="powered-by">
 <a href="/"><img src="https://tools-static.wmflabs.org/toolforge/banners/Powered-by-Toolforge.png" alt="Powered by Wikimedia Toolforge"></a>
 </div>
-<a id="source" href="https://phabricator.wikimedia.org/source/tool-replag/">view source</a>
+<a id="source" href="https://gitlab.wikimedia.org/toolforge-repos/replag/">view source</a>
 </footer>
 <script src="https://tools-static.wmflabs.org/static/jquery/2.1.0/jquery.min.js"></script>
 <script src="https://tools-static.wmflabs.org/static/jquery-tablesorter/2.0.5/jquery.tablesorter.min.js"></script>
