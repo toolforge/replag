@@ -158,7 +158,7 @@ foreach ( $replag as $host => $slices ) {
 <table id="<?= $shost ?>">
 <thead>
 <tr><th class="host" colspan="3"><?= $shost ?></th></tr>
-<tr><th class="slice">Slice</th>
+<tr><th class="slice">Section</th>
 <th class="lag">Lag (seconds)</th>
 <th class="time">Lag (time)</th>
 </tr></thead>
@@ -217,7 +217,7 @@ try {
 <table id="by-wiki">
 <thead><tr>
 <th class="wiki">Database</th>
-<th class="slice">Slice</th>
+<th class="slice">Section</th>
 <th class="lag">Lag (seconds)</th>
 <th class="time">Lag (time)</th>
 </tr></thead>
