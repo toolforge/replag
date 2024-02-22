@@ -91,10 +91,6 @@ $maxSectionReplag = array_fill_keys( $slices, 0 );
 /** @var array $wikis dbname => slice */
 $wikis = [];
 
-// Read database credentials from replica.my.cnf
-$cnf = parse_ini_file(
-	posix_getpwuid( posix_getuid() )['dir'] . '/replica.my.cnf' );
-
 /**
  * Connect to a MySQL database.
  * @param string $db Database name
@@ -102,11 +98,10 @@ $cnf = parse_ini_file(
  * @return PDO Database connection
  */
 function connect( $db, $host ) {
-	global $cnf;
 	return new PDO(
 		"mysql:dbname={$db};host={$host}",
-		$cnf['user'],
-		$cnf['password'],
+		getenv( 'TOOL_REPLICA_USER' ),
+		getenv( 'TOOL_REPLICA_PASSWORD' ),
 		array(
 			PDO::ATTR_TIMEOUT => 5,
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
