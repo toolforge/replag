@@ -252,8 +252,8 @@ foreach ( $wikis as $wiki => $slice ) {
 </div>
 <a id="source" href="https://gitlab.wikimedia.org/toolforge-repos/replag/">view source</a>
 </footer>
-<script src="https://tools-static.wmflabs.org/static/jquery/2.1.0/jquery.min.js"></script>
-<script src="https://tools-static.wmflabs.org/static/jquery-tablesorter/2.0.5/jquery.tablesorter.min.js"></script>
+<script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
 <script lang="javascript">
 $( document ).ready( function(){
 	$( '#by-wiki' ).tablesorter( { sortList:[[2,1]] } );
