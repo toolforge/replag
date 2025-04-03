@@ -70,8 +70,8 @@ $clusters = array(
 	'web.db.svc.wikimedia.cloud',
 );
 
-/** @var array $slices slice names */
-$slices = array(
+/** @var array $sections section names */
+$sections = [
 	's1',
 	's2',
 	's3',
@@ -80,15 +80,15 @@ $slices = array(
 	's6',
 	's7',
 	's8',
-);
+];
 
-/** @var array $replag host => slice => lag */
+/** @var array $replag host => section => lag */
 $replag = [];
 
 /** @var array $maxSectionReplag max replag in a given section */
-$maxSectionReplag = array_fill_keys( $slices, 0 );
+$maxSectionReplag = array_fill_keys( $sections, 0 );
 
-/** @var array $wikis dbname => slice */
+/** @var array $wikis dbname => section */
 $wikis = [];
 
 /**
@@ -126,28 +126,28 @@ function secondsAsTime( $seconds ) {
 	);
 }
 
-// Get lag data for each slice from the heartbeat_p db on each host
+// Get lag data for each section from the heartbeat_p db on each host
 foreach ( $clusters as $cluster ) {
 	$replag[$cluster] = array();
-	foreach ( $slices as $slice ) {
-		$host = "{$slice}.{$cluster}";
+	foreach ( $sections as $section ) {
+		$host = "{$section}.{$cluster}";
 		try {
 			$dbh = connect( 'heartbeat_p', $host );
 			$stmt = $dbh->prepare(
 				'SELECT lag FROM heartbeat WHERE shard = ?' );
-			$stmt->execute( array( $slice ) );
-			$replag[$cluster][$slice] = $stmt->fetchColumn();
-			$maxSectionReplag[$slice] = max( $maxSectionReplag[$slice], $replag[$cluster][$slice] );
+			$stmt->execute( array( $section ) );
+			$replag[$cluster][$section] = $stmt->fetchColumn();
+			$maxSectionReplag[$section] = max( $maxSectionReplag[$section], $replag[$cluster][$section] );
 			$stmt->closeCursor();
 		} catch ( PDOException $e ) {
-			$replag[$cluster][$slice] = PHP_INT_MAX;
+			$replag[$cluster][$section] = PHP_INT_MAX;
 		}
 	}
 }
 
-// Print replag data for each slice on each host
+// Print replag data for each section on each host
 $lagged = false;
-foreach ( $replag as $host => $slices ) {
+foreach ( $replag as $host => $sections ) {
 	$shost = htmlspecialchars( $host );
 ?>
 <table id="<?= $shost ?>">
@@ -159,14 +159,14 @@ foreach ( $replag as $host => $slices ) {
 </tr></thead>
 <tbody>
 <?php
-	foreach ( $slices as $slice => $lag ) {
+	foreach ( $sections as $section => $lag ) {
 		$class = '';
 		if ( $lag > 0 ) {
 			$lagged = true;
 			$class = 'lagged';
 		}
 		echo '<tr class="', $class, '">';
-		echo '<td class="slice">', htmlspecialchars( $slice ), '</td>';
+		echo '<td class="slice">', htmlspecialchars( $section ), '</td>';
 		echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
 		echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
 	}
@@ -190,20 +190,20 @@ if ( $lagged ) {
 <?php
 // Reset accumulators for per-wiki stats
 $replag = array();
-$slices = array();
+$sections = array();
 
 try {
-	// Get list of all databases and the slices they live on from meta_p.wiki
+	// Get list of all databases and the sections they live on from meta_p.wiki
 	$dbh = connect( 'meta_p', 's7.web.db.svc.wikimedia.cloud' );
-	$stmt = $dbh->query( 'SELECT dbname, slice FROM wiki ORDER BY dbname' );
+	$stmt = $dbh->query( 'SELECT dbname, slice AS section FROM wiki ORDER BY dbname' );
 	$res = $stmt->fetchAll( PDO::FETCH_ASSOC );
 	$stmt->closeCursor();
 
-	// Populate $wikis and $slices from meta_p.wiki results
+	// Populate $wikis and $sections from meta_p.wiki results
 	foreach ( $res as $row ) {
-		list( $slice, $domain ) = explode( '.', $row['slice'] );
-		$wikis[$row['dbname']] = $slice;
-		$slices[$slice] = $row['slice'];
+		list( $section, $domain ) = explode( '.', $row['section'] );
+		$wikis[$row['dbname']] = $section;
+		$sections[$section] = $row['section'];
 	}
 } catch ( PDOException $e ) {
 	// TODO: better error reporting
@@ -218,7 +218,7 @@ try {
 </tr></thead>
 <tbody>
 <?php
-// Print slice replag data for each database
+// Print section replag data for each database
 foreach ( $wikis as $wiki => $section ) {
 	$lag = $maxSectionReplag[$section];
 	echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
