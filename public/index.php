@@ -80,6 +80,7 @@ $sections = [
 	's6',
 	's7',
 	's8',
+	'x3',
 ];
 
 /** @var array $replag host => section => lag */
