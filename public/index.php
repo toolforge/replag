@@ -134,9 +134,7 @@ foreach ( $clusters as $cluster ) {
 		$host = "{$section}.{$cluster}";
 		try {
 			$dbh = connect( 'heartbeat_p', $host );
-			$stmt = $dbh->prepare(
-				'SELECT lag FROM heartbeat WHERE shard = ?' );
-			$stmt->execute( array( $section ) );
+			$stmt = $dbh->query( 'SELECT lag FROM heartbeat' );
 			$replag[$cluster][$section] = $stmt->fetchColumn();
 			$maxSectionReplag[$section] = max( $maxSectionReplag[$section], $replag[$cluster][$section] );
 			$stmt->closeCursor();
@@ -162,7 +160,7 @@ foreach ( $replag as $host => $sections ) {
 <?php
 	foreach ( $sections as $section => $lag ) {
 		$class = '';
-		if ( $lag > 0 ) {
+		if ( $lag >= 1 ) {
 			$lagged = true;
 			$class = 'lagged';
 		}
@@ -222,7 +220,7 @@ try {
 // Print section replag data for each database
 foreach ( $wikis as $wiki => $section ) {
 	$lag = $maxSectionReplag[$section];
-	echo '<tr class="', ( ( $lag > 0 ) ? 'lagged' : '' ), '">';
+	echo '<tr class="', ( ( $lag >= 1 ) ? 'lagged' : '' ), '">';
 	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.{analytics,web}.db.svc.wikimedia.cloud</td>';
 	echo '<td class="slice">', htmlspecialchars( $section ), '</td>';
 	echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
