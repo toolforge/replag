@@ -1,4 +1,5 @@
 config_version: v1beta1
+source_url: https://gitlab.wikimedia.org/toolforge-repos/replag/-/raw/master/toolforge.yaml
 components:
   tool-replag:
     build:
