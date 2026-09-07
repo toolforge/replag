@@ -1,0 +1,3 @@
+include:
+  - project: "repos/cloud/cicd/gitlab-ci"
+    file: "toolforge-cd/deploy-to-toolforge.yaml"
