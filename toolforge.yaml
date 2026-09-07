@@ -1,0 +1,11 @@
+config_version: v1beta1
+components:
+  tool-replag:
+    build:
+      repository: https://gitlab.wikimedia.org/toolforge-repos/replag.git
+      ref: HEAD
+    run:
+      command: web
+      mount: none
+      port: 8080
+      publish: /
