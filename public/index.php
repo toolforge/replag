@@ -60,7 +60,7 @@ footer {margin-top:2em;padding-top:1em;border-top:1px solid #333;text-align:righ
 <body>
 <header>
 <h1>Replag reported by heartbeat_p</h1>
-<p>Wikimedia Cloud Services <a href="https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database">Wiki Replicas</a> replication lag as reported by the <a href="https://lists.wikimedia.org/pipermail/labs-l/2015-November/004143.html">heartbeat_p database</a>.</p>
+<p>Wikimedia Cloud Services <a href="https://wikitech.wikimedia.org/wiki/Help:Wiki_Replicas">Wiki Replicas</a> replication lag as reported by the <a href="https://lists.wikimedia.org/pipermail/labs-l/2015-November/004143.html">heartbeat_p database</a>.</p>
 </header>
 <section id="by-host">
 <?php
