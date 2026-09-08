@@ -93,7 +93,12 @@ const UNKNOWN_REPLAG = -1;
 $maxSectionReplag = array_fill_keys( $sections, UNKNOWN_REPLAG );
 
 /** @var array $wikis dbname => section */
-$wikis = [];
+$wikis = [
+	// Hardcoded special sections
+	'links.commonswiki' => 'x4',
+	'links.testcommonswiki' => 'x4',
+	'termstore.wikidatawiki' => 'x3',
+];
 
 /**
  * Connect to a MySQL database.
@@ -223,6 +228,8 @@ try {
 } catch ( PDOException $e ) {
 	// TODO: better error reporting
 }
+
+ksort( $wikis );
 ?>
 <table id="by-wiki">
 <thead><tr>
