@@ -87,8 +87,10 @@ $sections = [
 /** @var array $replag host => section => lag */
 $replag = [];
 
+const UNKNOWN_REPLAG = -1;
+
 /** @var array $maxSectionReplag max replag in a given section */
-$maxSectionReplag = array_fill_keys( $sections, 0 );
+$maxSectionReplag = array_fill_keys( $sections, UNKNOWN_REPLAG );
 
 /** @var array $wikis dbname => section */
 $wikis = [];
@@ -112,7 +114,7 @@ function connect( $db, $host ) {
 }
 
 function formatNumber( int $seconds ) {
-	return $seconds === PHP_INT_MAX
+	return ( $seconds === UNKNOWN_REPLAG )
 		? '???'
 		: htmlspecialchars( (string)$seconds );
 }
@@ -123,7 +125,7 @@ function formatNumber( int $seconds ) {
  * @return string Time interval in <hours>:<minutes>:<seconds> format
  */
 function secondsAsTime( int $seconds ) {
-	if ( $seconds === PHP_INT_MAX ) {
+	if ( $seconds === UNKNOWN_REPLAG ) {
 		return '???';
 	}
 	return sprintf(
@@ -155,10 +157,10 @@ foreach ( $clusters as $cluster ) {
 					$lag,
 				);
 			} else {
-				$replag[$cluster][$section] = PHP_INT_MAX;
+				$replag[$cluster][$section] = UNKNOWN_REPLAG;
 			}
 		} catch ( PDOException $e ) {
-			$replag[$cluster][$section] = PHP_INT_MAX;
+			$replag[$cluster][$section] = UNKNOWN_REPLAG;
 		}
 	}
 }
@@ -179,7 +181,7 @@ foreach ( $replag as $host => $sections ) {
 <?php
 	foreach ( $sections as $section => $lag ) {
 		$class = '';
-		if ( $lag >= 1 ) {
+		if ( $lag >= 1 || $lag === UNKNOWN_REPLAG ) {
 			$lagged = true;
 			$class = 'lagged';
 		}
@@ -206,10 +208,6 @@ if ( $lagged ) {
 ?>
 <section>
 <?php
-// Reset accumulators for per-wiki stats
-$replag = array();
-$sections = array();
-
 try {
 	// Get list of all databases and the sections they live on from meta_p.wiki
 	$dbh = connect( 'meta_p', 's7.web.db.svc.wikimedia.cloud' );
@@ -221,7 +219,6 @@ try {
 	foreach ( $res as $row ) {
 		list( $section, $domain ) = explode( '.', $row['section'] );
 		$wikis[$row['dbname']] = $section;
-		$sections[$section] = $row['section'];
 	}
 } catch ( PDOException $e ) {
 	// TODO: better error reporting
@@ -239,7 +236,7 @@ try {
 // Print section replag data for each database
 foreach ( $wikis as $wiki => $section ) {
 	$lag = $maxSectionReplag[$section];
-	echo '<tr class="', ( ( $lag >= 1 ) ? 'lagged' : '' ), '">';
+	echo '<tr class="', ( ( $lag >= 1 || $lag === UNKNOWN_REPLAG ) ? 'lagged' : '' ), '">';
 	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.{analytics,web}.db.svc.wikimedia.cloud</td>';
 	echo '<td class="slice">', htmlspecialchars( $section ), '</td>';
 	echo '<td class="lag">', formatNumber( $lag ), '</td>';
@@ -259,7 +256,10 @@ foreach ( $wikis as $wiki => $section ) {
 <script src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
 <script lang="javascript">
 $( document ).ready( function(){
-	$( '#by-wiki' ).tablesorter( { sortList:[[2,1]] } );
+	$( '#by-wiki' ).tablesorter( {
+		sortList: [[2, 1]],
+		stringTo: "max",
+	} );
 });
 </script>
 </body>
