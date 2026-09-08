@@ -111,14 +111,20 @@ function connect( $db, $host ) {
 	);
 }
 
+function formatNumber( int $seconds ) {
+	return $seconds === PHP_INT_MAX
+		? '???'
+		: htmlspecialchars( (string)$seconds );
+}
+
 /**
  * Format a count of seconds as a pretty time interval.
  * @param int $seconds
  * @return string Time interval in <hours>:<minutes>:<seconds> format
  */
-function secondsAsTime( $seconds ) {
+function secondsAsTime( int $seconds ) {
 	if ( $seconds === PHP_INT_MAX ) {
-		return 'N/A';
+		return '???';
 	}
 	return sprintf(
 		'%02d:%02d:%02d',
@@ -139,9 +145,18 @@ foreach ( $clusters as $cluster ) {
 			// when splitting new sections from existing ones
 			$stmt = $dbh->prepare( 'SELECT lag FROM heartbeat WHERE shard = ?' );
 			$stmt->execute( [ $section ] );
-			$replag[$cluster][$section] = $stmt->fetchColumn();
-			$maxSectionReplag[$section] = max( $maxSectionReplag[$section], $replag[$cluster][$section] );
+			$lag = $stmt->fetchColumn();
 			$stmt->closeCursor();
+
+			if ( $lag ) {
+				$replag[$cluster][$section] = $lag;
+				$maxSectionReplag[$section] = max(
+					$maxSectionReplag[$section],
+					$lag,
+				);
+			} else {
+				$replag[$cluster][$section] = PHP_INT_MAX;
+			}
 		} catch ( PDOException $e ) {
 			$replag[$cluster][$section] = PHP_INT_MAX;
 		}
@@ -170,7 +185,7 @@ foreach ( $replag as $host => $sections ) {
 		}
 		echo '<tr class="', $class, '">';
 		echo '<td class="slice">', htmlspecialchars( $section ), '</td>';
-		echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
+		echo '<td class="lag">', formatNumber( $lag ), '</td>';
 		echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
 	}
 ?>
@@ -227,7 +242,7 @@ foreach ( $wikis as $wiki => $section ) {
 	echo '<tr class="', ( ( $lag >= 1 ) ? 'lagged' : '' ), '">';
 	echo '<td class="wiki">', htmlspecialchars( $wiki ), '.{analytics,web}.db.svc.wikimedia.cloud</td>';
 	echo '<td class="slice">', htmlspecialchars( $section ), '</td>';
-	echo '<td class="lag">', htmlspecialchars( $lag ), '</td>';
+	echo '<td class="lag">', formatNumber( $lag ), '</td>';
 	echo '<td class="time">', secondsAsTime( $lag ), '</td></tr>';
 }
 ?>
