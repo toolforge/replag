@@ -135,7 +135,10 @@ foreach ( $clusters as $cluster ) {
 		$host = "{$section}.{$cluster}";
 		try {
 			$dbh = connect( 'heartbeat_p', $host );
-			$stmt = $dbh->query( 'SELECT lag FROM heartbeat' );
+			// Section filter is not really necessary these days, except
+			// when splitting new sections from existing ones
+			$stmt = $dbh->prepare( 'SELECT lag FROM heartbeat WHERE shard = ?' );
+			$stmt->execute( [ $section ] );
 			$replag[$cluster][$section] = $stmt->fetchColumn();
 			$maxSectionReplag[$section] = max( $maxSectionReplag[$section], $replag[$cluster][$section] );
 			$stmt->closeCursor();
