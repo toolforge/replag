@@ -94,7 +94,8 @@ $maxSectionReplag = array_fill_keys( $sections, UNKNOWN_REPLAG );
 
 /** @var array $wikis dbname => section */
 $wikis = [
-	// Hardcoded special sections
+	// Hardcoded special extension databases
+	'centralauth' => 's7',
 	'links.commonswiki' => 'x4',
 	'links.testcommonswiki' => 'x4',
 	'termstore.wikidatawiki' => 'x3',
