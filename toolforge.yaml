@@ -10,3 +10,4 @@ components:
       mount: none
       port: 8080
       publish: /
+      health_check_http: /healthz.txt
